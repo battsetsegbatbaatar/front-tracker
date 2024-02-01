@@ -7,6 +7,7 @@ import "@fontsource/roboto"; // Defaults to weight 400
 import "@fontsource/roboto/400.css"; // Specify weight
 import "@fontsource/roboto/400-italic.css"; // Specify weight and style
 import { handleClientScriptLoad } from "next/script";
+import { useRouter } from "next/router";
 
 const SignUpStep = () => {
   const [step, setStep] = useState(1);
@@ -14,7 +15,7 @@ const SignUpStep = () => {
   const handleStepChange = (newStep) => {
     setStep(step + 1);
   };
-
+  const router = useRouter("");
   return (
     <div>
       {step == 1 && (
@@ -144,7 +145,7 @@ const SignUpStep = () => {
                 </p>
               </div>
               <a
-                // onClick={}
+                onClick={router.push("/")}
                 className=" btn w-[348px] rounded-full bg-[#0166FF] text-white flex items-center justify-center"
               >
                 Go to Dashboard
