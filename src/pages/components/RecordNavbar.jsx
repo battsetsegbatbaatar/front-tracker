@@ -16,11 +16,14 @@ const Category = [
   { category: "Others" },
 ];
 
-export const RecordNavbar = () => {
+export const RecordNavbar = (props) => {
   return (
     <div className="overflow-x-auto card card-side py-6 px-4 bg-base-100 flex flex-col gap-6">
       <h5 className="Roboto text-2xl font-bold text-slate-900">Records</h5>
-      <button className="btn btn-square w-[100%] justify-center bg-[#0166FF] rounded-full text-white Roboto text-lg text-center">
+      <button
+        onClick={props.onclick}
+        className="btn btn-square w-[100%] justify-center bg-[#0166FF] rounded-full text-white Roboto text-lg text-center"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="20"
@@ -38,7 +41,7 @@ export const RecordNavbar = () => {
       <input
         type="text"
         placeholder="Type here"
-        className="input input-bordered w-full max-w-xs"
+        className="input input-bordered w-full max-w-xs bg-[#F9FAFB]"
       />
       <div className="flex flex-col gap-4">
         <h5 className="Roboto text-lg font-bold text-slate-900">Types</h5>
@@ -60,7 +63,7 @@ export const RecordNavbar = () => {
       <div>
         <div className="flex justify-between items-center">
           <h5 className="Roboto text-lg font-bold text-slate-900">Category</h5>
-          <button className="Roboto btn bg-none text-base font-bold text-[#1F2937]">
+          <button className="Roboto btn bg-white text-base font-bold text-[#1F2937]">
             Clear
           </button>
         </div>
@@ -92,11 +95,11 @@ export const RecordNavbar = () => {
         <div className="flex gap-4">
           <input
             type="text"
-            className="input input-bordered w-[150px] max-w-xs bg-[#F3F4F6]"
+            className="input input-bordered w-[150px] max-w-xs bg-[#F9FAFB]"
           />
           <input
             type="text"
-            className="input input-bordered w-[150px] max-w-xs bg-[#F3F4F6]"
+            className="input input-bordered w-[150px] max-w-xs bg-[#F9FAFB]"
           />
         </div>
         <div>

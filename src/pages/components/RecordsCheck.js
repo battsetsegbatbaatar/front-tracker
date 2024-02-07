@@ -8,7 +8,7 @@ export const RecordsCheck = (props) => {
     <div className="text-base card card-side overflow-x-auto justify-between items-center font-bold bg-white text-slate-900 px-6 py-4">
       <div className="flex gap-4 items-center">
         <input type="checkbox" checked="checked" className="checkbox" />
-        {props.svg}
+        <img className="w-12 h-12 rounded-full" src={props.svg}></img>
         <div className="flex flex-col justify-start">
           <h5 className="text-base Roboto">{props.name}</h5>
           <p className="text-[#6B7280] text-sm">{props.date}</p>

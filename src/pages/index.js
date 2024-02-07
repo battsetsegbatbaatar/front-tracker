@@ -1,18 +1,18 @@
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import { Geld } from "./components/Icon/Geld";
-import "@fontsource/roboto"; // Defaults to weight 400
-import "@fontsource/roboto/400.css"; // Specify weight
-import "@fontsource/roboto/400-italic.css"; // Specify weight and style
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Loading } from "./components/Loading";
+import axios from "axios";
+
+import "@fontsource/roboto"; // Defaults to weight 400
+import "@fontsource/roboto/400.css"; // Specify weight
+import "@fontsource/roboto/400-italic.css"; // Specify weight and style
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-  const [users, setUsers] = useState([]);
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("false");
@@ -21,13 +21,12 @@ export default function Home() {
   const BASE_URL = "http://localhost:8080";
   const router = useRouter();
 
-  const fetchData = async () => {
+  const fetchUsers = async () => {
     try {
-      const res = await fetch(BASE_URL + "/signin");
-      const data = await res.json();
-      setUsers(data);
+      const res = await axios.get(BASE_URL + "/signin");
+      console.log(res.data);
     } catch (error) {
-      // alert(error.message);
+      alert(error.message);
     }
   };
 
@@ -38,21 +37,23 @@ export default function Home() {
         setError(true);
         return;
       }
-      const newInput = {
-        email: email,
-        password: password,
-      };
+
       try {
-        const res = await fetch(BASE_URL + "/signin", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newInput),
+        const res = await axios.post(BASE_URL + "/signin", {
+          email,
+          password,
         });
-        console.log(res);
+
+        const { token } = res.data;
+        localStorage.setItem("authToken", token);
+        
+
         router.push("/Dashboard");
         alert("Success enter");
       } catch (error) {
+        console.log(error);
         alert(error.message);
+        router.push("/");
       }
     } finally {
       setLoading(false);
@@ -60,7 +61,7 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchUsers();
   }, []);
   return (
     <header className="w-[2050px] h-[1080px] flex justify-center">

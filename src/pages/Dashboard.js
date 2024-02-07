@@ -9,6 +9,7 @@ import { Records } from "./components/Records";
 import "@fontsource/roboto"; // Defaults to weight 400
 import "@fontsource/roboto/400.css"; // Specify weight
 import "@fontsource/roboto/400-italic.css"; // Specify weight and style
+import axios from "axios";
 
 const Dashboard = () => {
   const [records, setRecords] = useState([]);
@@ -16,42 +17,16 @@ const Dashboard = () => {
 
   const fetchData = async () => {
     try {
-      const res = await fetch(BASE_URL + "/records");
-      const data = await res.json();
-      setRecords(data);
-      console.log(records);
+      const token = localStorage.getItem("authToken");
+      const res = await axios.get(BASE_URL + "/records", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log(res.data);
     } catch (error) {
       alert("recordoo awj chadsangvi ee gj");
     }
   };
-  // const labels = ["Jul"];
 
-  // const data = {
-  //   labels: labels,
-  //   datasets: [
-  //     {
-  //       label: "July Income",
-  //       data: [3000000, 2000000 * 7], // Green and Yellow bars
-  //       backgroundColor: [
-  //         "rgba(75, 192, 192, 0.2)", // Green color
-  //         "rgba(255, 205, 86, 0.2)", // Yellow color
-  //       ],
-  //       borderColor: ["rgb(75, 192, 192)", "rgb(255, 205, 86)"],
-  //       borderWidth: 1,
-  //     },
-  //   ],
-  // };
-  // const config = {
-  //   type: "bar",
-  //   data: data,
-  //   options: {
-  //     scales: {
-  //       y: {
-  //         beginAtZero: true,
-  //       },
-  //     },
-  //   },
-  // };
   useEffect(() => {
     fetchData();
   }, []);

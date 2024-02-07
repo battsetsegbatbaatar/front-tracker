@@ -2,37 +2,74 @@ import React, { useEffect, useState } from "react";
 import { GeldLogo } from "./components/Icon/GeldLogo";
 import { RecordsCheck } from "./components/RecordsCheck";
 import { RecordNavbar } from "./components/RecordNavbar";
+import axios from "axios";
+
 import "@fontsource/roboto"; // Defaults to weight 400
 import "@fontsource/roboto/400.css"; // Specify weight
 import "@fontsource/roboto/400-italic.css"; // Specify weight and style
 
 const Record = () => {
   const [records, setRecords] = useState([]);
-  const [visible, setVisible] = useState(false);
+  const [activeTab, setActiveTab] = useState("Expense");
+  const [error, setError] = useState("false");
+
+  const [name, setName] = useState("");
+  const [createdat, setCreatedat] = useState("");
+  const [total, setTotal] = useState("");
+  const [type, setType] = useState("");
+
   const BASE_URL = "http://localhost:8080";
 
   const fetchData = async () => {
     try {
-      const res = await fetch(BASE_URL + "/records");
-      const data = await res.json();
-      setRecords(data);
-      console.log(records);
+      const token = localStorage.getItem("authToken");
+      const res = await axios.get(BASE_URL + "/records", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setRecords(res.data);
+      console.log(res.data);
+      console.log(res);
     } catch (error) {
+      console.log(error);
       alert("recordoo awj chadsangvi ee gj");
     }
   };
-  const openModal = (action, product) => {
-    if (action === "create") setVisible(true);
-    console.log(product);
+
+  const handleTabClick = (type) => {
+    setActiveTab(type);
+    setType(type);
   };
-  const closeMadal = () => {
-    setVisible(false);
+
+  const createRecord = async () => {
+    if (!total || !name || !type) {
+      setError(true);
+      return;
+    }
+    try {
+      const token = localStorage.getItem("authToken");
+      const res = await axios.post(
+        BASE_URL + "records",
+        {
+          name,
+          createdat,
+          total,
+          type,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      console.log(res.data, "res");
+      alert("Success created");
+    } catch (error) {
+      alert("bolku bnoo hogshoon owgoon");
+    }
   };
+
   useEffect(() => {
     fetchData();
   }, []);
+
   return (
-    <div className="flex flex-col w-[2050px] bg-[#F3F4F6] ">
+    <div className="flex flex-col w-[2050px] bg-[#F3F4F6] relative">
       <div className="flex w-[100%] px-[350px] py-4 bg-white justify-between items-center">
         <div className="flex gap-6 items-center">
           <GeldLogo />
@@ -44,14 +81,16 @@ const Record = () => {
           </a>
           <a
             href="#"
-            onClick={() => openModal("update")}
             className="Roboto text-base font-bold text-center text-slate-900"
           >
             Records
           </a>
         </div>
         <div className="flex items-center gap-6">
-          <button className="btn btn-square w-[200px] bg-[#0166FF] rounded-full text-white Roboto text-sm text-center">
+          <button
+            onClick={() => document.getElementById("my_modal_3").showModal()}
+            className="btn btn-square w-[200px] bg-[#0166FF] rounded-full text-white Roboto text-sm text-center"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
@@ -75,13 +114,15 @@ const Record = () => {
       </div>
       <div className="flex w-[100%] px-[350px] py-8 gap-5">
         <div className="w-[30%]">
-          <RecordNavbar />
+          <RecordNavbar
+            onclick={() => document.getElementById("my_modal_3").showModal()}
+          />
         </div>
 
         <div className=" w-[70%] flex flex-col gap-4 mt-6">
           <div className="flex justify-between">
             <div className="flex gap-4 items-center">
-              <button className="btn bg-[#E5E7EB]">
+              <button className="btn bg-[#F9FAFB]">
                 <svg
                   width="20"
                   height="20"
@@ -100,7 +141,7 @@ const Record = () => {
               <p className="Roboto text-base font-bold text-slate-900">
                 Last 30 Days
               </p>
-              <button className="btn bg-[#E5E7EB]">
+              <button className="btn bg-[#F9FAFB]">
                 <svg
                   width="20"
                   height="20"
@@ -120,7 +161,7 @@ const Record = () => {
             <ul className="menu bg-[#F9FAFB] w-56 rounded-box">
               <li>
                 <details open>
-                  <summary className="Roboto text-base">My Files</summary>
+                  <summary className="Roboto text-base">Newest First</summary>
                 </details>
               </li>
             </ul>
@@ -133,7 +174,7 @@ const Record = () => {
             <div className="text-[#94A3B8] text-base Roboto">-35500 ₮</div>
           </div>
           <div className="flex flex-col gap-6">
-            <div className="flex flex-col gap-3">
+            {/* <div className="flex flex-col gap-3">
               <h5 className="Roboto text-lg font-bold text-slate-900">Today</h5>
               {records.map((record) => (
                 <RecordsCheck
@@ -141,56 +182,151 @@ const Record = () => {
                   name={record.name}
                   date={record.createdat}
                   total={record.total}
-                  // svg={record.categoryimage}
+                  svg={
+                    record.categoryimage === "" ||
+                    "https://png.pngtree.com/png-clipart/20230920/ourlarge/pngtree-cute-anime-fluffy-cat-sticker-png-image_10143548.png"
+                  }
                 />
               ))}
-            </div>
-            <div className="flex flex-col gap-3">
-              <h5 className="Roboto text-lg font-bold text-slate-900">
-                Yesterday
-              </h5>
-              {records.map((record) => (
-                <RecordsCheck
-                  key={record.id}
-                  name={record.name}
-                  date={record.createdat}
-                  total={record.total}
-                  // svg={record.categoryimage}
-                />
-              ))}
-            </div>
-            <div className="flex flex-col gap-3">
-              <h5 className="Roboto text-lg font-bold text-slate-900">
-                2024.01.31
-              </h5>
-              {records.map((record) => (
-                <RecordsCheck
-                  key={record.id}
-                  name={record.name}
-                  date={record.createdat}
-                  total={record.total}
-                  // svg={record.categoryimage}
-                />
-              ))}
-            </div>
-            <div className="flex flex-col gap-3">
-              <h5 className="Roboto text-lg font-bold text-slate-900">
-                2024.01.30
-              </h5>
-              {records.map((record) => (
-                <RecordsCheck
-                  key={record.id}
-                  name={record.name}
-                  date={record.createdat}
-                  total={record.total}
-                  // svg={record.categoryimage}
-                />
-              ))}
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
-      {visible && <div></div>}
+
+      <dialog id="my_modal_3" className="modal">
+        <div className="modal-box w-9/12 max-w-3xl flex flex-col gap-5">
+          <form
+            method="dialog"
+            className="flex justify-between px-6 pt-5 items-center"
+          >
+            <h5 className="absolute left-7 top-5 Roboto font-bold text-lg">
+              {" "}
+              Add Record
+            </h5>
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-6 top-5">
+              ✕
+            </button>
+          </form>
+          <hr></hr>
+          <form method="dialog" className="w-[100%] flex gap-10">
+            <div className="w-[50%] flex flex-col gap-5 justify-center items-center">
+              <div
+                role="tablist"
+                className="tabs tabs-boxed w-[100%] border-[#F3F4F6]"
+              >
+                <a
+                  role="tab"
+                  onClick={() => handleTabClick("expense")}
+                  className={`tab  tab-rounded-full ${
+                    activeTab === "expense" &&
+                    `${("tab-active", "bg-blue-600")}`
+                  }`}
+                >
+                  Expense
+                </a>
+                <a
+                  role="tab"
+                  onClick={() => handleTabClick("income")}
+                  className={`tab  ${
+                    activeTab === "income" &&
+                    `${("tab-active", "bg-green-600")}`
+                  }`}
+                >
+                  Income
+                </a>
+              </div>
+              <label className="w-[100%] flex flex-col gap-2">
+                <legend>Amount</legend>
+                <input
+                  onChange={(e) => {
+                    setTotal(e.target.value);
+                    setError(false);
+                  }}
+                  type="text"
+                  placeholder="Type here"
+                  className="input input-bordered w-[100%] border-[#D1D5DB] bg-[#F9FAFB]"
+                />
+              </label>
+              <div className="w-[100%] flex flex-col gap-2">
+                <h5 className="">Category</h5>
+
+                <select
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    setError(false);
+                  }}
+                  className="select rounded-md border border-[#D1D5DB] p-2 bg-[#F9FAFB]"
+                >
+                  <option disabled selected>
+                    {activeTab === "expense"
+                      ? "Choose"
+                      : "Find or Choose category"}
+                  </option>
+                  <option>Foot & Drinks</option>
+                  <option>Shopping</option>
+                  <option>Housing</option>
+                  <option>Transportation</option>
+                  <option>Vehicle</option>
+                  <option>Life & Entertainment</option>
+                  <option>Communication, PC</option>
+                  <option>Financial expenses</option>
+                </select>
+              </div>
+              <div className="flex w-[100%] justify-between">
+                <div>
+                  <p>Date</p>
+                  <input
+                    onChange={(e) => {
+                      setCreatedat(e.target.value);
+                    }}
+                    type="date"
+                    className="border w-[170px] rounded-md border-[#D1D5DB] p-2 bg-[#F9FAFB]"
+                  ></input>
+                </div>
+                <div>
+                  <p>Time</p>
+                  <input
+                    onChange={(e) => {
+                      setCreatedat(e.target.value);
+                    }}
+                    type="time"
+                    className="border w-[170px] rounded-md border-[#D1D5DB] p-2 bg-[#F9FAFB]"
+                  ></input>
+                </div>
+              </div>
+              <button
+                onClick={createRecord}
+                className={`btn btn-square rounded-full w-[100%] ${
+                  activeTab === "expense" ? "bg-blue-600" : "bg-green-600"
+                }`}
+              >
+                Add Record
+              </button>
+            </div>
+            <div className="w-[50%] flex flex-col gap-5">
+              <div className="w-[100%] flex flex-col gap-2">
+                <h5 className="">Payee</h5>
+                <ul className="menu rounded-md border border-[#D1D5DB] p-1 bg-[#F9FAFB]">
+                  <li>
+                    <details open>
+                      <summary className="Roboto text-base">Write here</summary>
+                    </details>
+                  </li>
+                </ul>
+              </div>
+              <div className="w-[100%] flex flex-col gap-2">
+                <h5>Note</h5>
+                <textarea
+                  placeholder="Write here"
+                  className="w-[100%] border border-[#D1D5DB] bg-[#F9FAFB] p-4 rounded-md h-[265px]"
+                  rows="4"
+                  cols="50"
+                ></textarea>
+              </div>
+            </div>
+          </form>
+        </div>
+      </dialog>
     </div>
   );
 };
